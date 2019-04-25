@@ -1602,6 +1602,7 @@ struct ipa3_context {
 	struct mutex ipa_cne_evt_lock;
 	bool use_ipa_pm;
 	bool vlan_mode_iface[IPA_VLAN_IF_MAX];
+	bool fw_loaded;
 	atomic_t ipa_clk_vote;
 };
 
