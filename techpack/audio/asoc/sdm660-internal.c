@@ -3546,6 +3546,7 @@ static struct snd_soc_dai_link msm_tdm_fe_dai_link[] = {
 	},
 };
 
+#if IS_ENABLED(CONFIG_SND_SOC_RT5514)
 static struct snd_soc_dai_link msm_spi_dai_links[] = {
 	{
 	 .name = "SoundTrigger 1",
@@ -3596,6 +3597,7 @@ static struct snd_soc_dai_link msm_spi_dai_links[] = {
 	 .no_pcm = 1,
 	},
 };
+#endif /* CONFIG_SND_SOC_RT5514 */
 
 static struct snd_soc_dai_link msm_int_dai_links[
 ARRAY_SIZE(msm_int_dai) +
@@ -3607,8 +3609,11 @@ ARRAY_SIZE(msm_auxpcm_be_dai_links)+
 ARRAY_SIZE(msm_wcn_be_dai_links) +
 ARRAY_SIZE(msm_wsa_be_dai_links) +
 ARRAY_SIZE(ext_disp_be_dai_link) +
-ARRAY_SIZE(msm_tdm_fe_dai_link) +
-ARRAY_SIZE(msm_spi_dai_links)];
+ARRAY_SIZE(msm_tdm_fe_dai_link)
+#if IS_ENABLED(CONFIG_SND_SOC_RT5514)
++ ARRAY_SIZE(msm_spi_dai_links)
+#endif
+];
 
 static struct snd_soc_card sdm660_card = {
 	/* snd_soc_card_sdm660 */
@@ -3694,6 +3699,22 @@ static struct snd_soc_card *msm_int_populate_sndcard_dailinks(
 
 	if (of_property_read_bool(dev->of_node,
 				  "qcom,mi2s-audio-intf")) {
+		struct device_node *pa_node;
+		int k;
+
+		pa_node = of_parse_phandle(dev->of_node,
+					   "qcom,pri-mi2s-codec", 0);
+		if (pa_node) {
+			for (k = 0; k < ARRAY_SIZE(msm_mi2s_be_dai_links); k++) {
+				struct snd_soc_dai_link *l = &msm_mi2s_be_dai_links[k];
+
+				if (strcmp(l->cpu_dai_name, "msm-dai-q6-mi2s.0"))
+					continue;
+				l->codec_name = NULL;
+				l->codec_of_node = pa_node;
+				l->codec_dai_name = "aw882xx-aif";
+			}
+		}
 		memcpy(dailink + len1,
 		       msm_mi2s_be_dai_links,
 		       sizeof(msm_mi2s_be_dai_links));
@@ -3733,10 +3754,12 @@ static struct snd_soc_card *msm_int_populate_sndcard_dailinks(
 		sizeof(msm_tdm_fe_dai_link));
 	len1 += ARRAY_SIZE(msm_tdm_fe_dai_link);
 
+#if IS_ENABLED(CONFIG_SND_SOC_RT5514)
 	memcpy(dailink + len1,
 	       msm_spi_dai_links,
 	       sizeof(msm_spi_dai_links));
 	len1 += ARRAY_SIZE(msm_spi_dai_links);
+#endif
 
 	card->dai_link = dailink;
 	card->num_links = len1;
@@ -3802,11 +3825,13 @@ static int msm_internal_init(struct platform_device *pdev,
 	atomic_set(&pdata->int_mclk0_rsc_ref, 0);
 	atomic_set(&pdata->int_mclk0_enabled, false);
 
-	pdata->mic_vreg = devm_regulator_get(card->dev, "vdd_mic");
+
+	pdata->mic_vreg = devm_regulator_get_optional(card->dev, "vdd_mic");
 	if (IS_ERR(pdata->mic_vreg)) {
-		dev_err(&pdev->dev, "%s: vdd_mic regulator request failed\n"
-			, __func__);
-		goto err;
+		dev_info(&pdev->dev, "%s: without vdd_mic, moving on without him\n",
+			 __func__);
+		pdata->mic_vreg = NULL;
+		goto done;
 	}
 	ret = regulator_set_voltage(pdata->mic_vreg, 1800000, 1800000);
 	if (ret)
@@ -3814,14 +3839,18 @@ static int msm_internal_init(struct platform_device *pdev,
 	ret = regulator_set_load(pdata->mic_vreg, 2260);
 	if (ret)
 		goto err_set_supply;
+done:
 
 	dev_info(&pdev->dev, "%s: default codec configured\n", __func__);
 
 	return 0;
 
 err_set_supply:
-	dev_err(&pdev->dev, "%s: vdd_mic configure failed\n", __func__);
+	dev_warn(&pdev->dev, "%s: vdd_mic configure failed (%d), moving on without him\n",
+		 __func__, ret);
 	devm_regulator_put(pdata->mic_vreg);
+	pdata->mic_vreg = NULL;
+	return 0;
 err:
 	return ret;
 }
