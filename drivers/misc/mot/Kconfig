@@ -5,4 +5,11 @@ config MOT_SENSORS_CLASS
 	help
 	  Base class used by Motorola sensor drivers (ABOV SAR).
 
+config MOT_ABOV_SAR
+	bool "ABOV capacitive SAR sensor (astro)"
+	depends on I2C
+	select MOT_SENSORS_CLASS
+	help
+	  ABOV SAR Driver
+
 endmenu
