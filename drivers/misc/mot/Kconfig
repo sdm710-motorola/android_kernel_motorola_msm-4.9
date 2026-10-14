@@ -23,4 +23,9 @@ config MOT_MMI_INFO
 	help
 	  Motorola information driver. It stores device information for userspace and writes certain data to an area accessible by the modem. Important.
 
+config MOT_MMI_SYS_TEMP
+	bool "Motorola virtual temperature driver"
+	help
+	  Motorola virtual temperature sensors (back and front)
+
 endmenu
