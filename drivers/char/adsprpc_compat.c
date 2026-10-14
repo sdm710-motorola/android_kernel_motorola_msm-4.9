@@ -534,6 +534,7 @@ long compat_fastrpc_device_ioctl(struct file *filp, unsigned int cmd,
 		return err;
 	}
 	case FASTRPC_IOCTL_SETMODE:
+	case FASTRPC_IOCTL_GET_DSP_INFO:
 		return filp->f_op->unlocked_ioctl(filp, cmd,
 						(unsigned long)compat_ptr(arg));
 	case COMPAT_FASTRPC_IOCTL_CONTROL:

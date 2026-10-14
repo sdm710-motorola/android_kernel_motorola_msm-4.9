@@ -32,6 +32,8 @@
 #define FASTRPC_IOCTL_INVOKE_CRC _IOWR('R', 11, struct fastrpc_ioctl_invoke_crc)
 #define FASTRPC_IOCTL_CONTROL   _IOWR('R', 12, struct fastrpc_ioctl_control)
 #define FASTRPC_IOCTL_MUNMAP_FD _IOWR('R', 13, struct fastrpc_ioctl_munmap_fd)
+#define FASTRPC_IOCTL_GET_DSP_INFO \
+				_IOWR('R', 17, struct fastrpc_ioctl_dsp_cap)
 
 #define FASTRPC_GLINK_GUID "fastrpcglink-apps-dsp"
 #define FASTRPC_SMD_GUID "fastrpcsmd-apps-dsp"
@@ -255,6 +257,12 @@ struct fastrpc_ctrl_smmu {
 #define FASTRPC_CONTROL_KALLOC (3)
 struct fastrpc_ctrl_kalloc {
 	uint32_t kalloc_support; /* Remote memory allocation from kernel */
+};
+
+struct fastrpc_ioctl_dsp_cap {
+	uint32_t domain;
+	uint32_t attribute_id;
+	uint32_t capability;
 };
 
 struct fastrpc_ioctl_control {

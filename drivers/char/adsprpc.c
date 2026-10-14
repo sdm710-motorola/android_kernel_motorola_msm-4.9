@@ -326,6 +326,7 @@ struct fastrpc_apps {
 	struct ion_client *client;
 	struct device *dev;
 	unsigned int latency;
+	bool secure_flag;
 	bool glink;
 	bool legacy;
 	spinlock_t ctxlock;
@@ -3539,7 +3540,8 @@ static int fastrpc_get_info(struct fastrpc_file *fl, uint32_t *info)
 		if (err)
 			goto bail;
 		/* Check to see if the device node is non-secure */
-		if (fl->dev_minor == MINOR_NUM_DEV) {
+		if (fl->dev_minor == MINOR_NUM_DEV &&
+			fl->apps->secure_flag == true) {
 			/*
 			 * For non secure device node check and make sure that
 			 * the channel allows non-secure access
@@ -3622,6 +3624,7 @@ static long fastrpc_device_ioctl(struct file *file, unsigned int ioctl_num,
 		struct fastrpc_ioctl_init_attrs init;
 		struct fastrpc_ioctl_perf perf;
 		struct fastrpc_ioctl_control cp;
+		struct fastrpc_ioctl_dsp_cap cap;
 	} p;
 	void *param = (char *)ioctl_param;
 	struct fastrpc_file *fl = (struct fastrpc_file *)file->private_data;
@@ -3820,7 +3823,18 @@ static long fastrpc_device_ioctl(struct file *file, unsigned int ioctl_num,
 		if (err)
 			goto bail;
 		break;
-
+	case FASTRPC_IOCTL_GET_DSP_INFO:
+		K_COPY_FROM_USER(err, 0, &p.cap, param, sizeof(p.cap));
+		if (err)
+			goto bail;
+		VERIFY(err, p.cap.domain < NUM_CHANNELS);
+		if (err)
+			goto bail;
+		p.cap.capability = (p.cap.attribute_id == 0) ? 1 : 0;
+		K_COPY_TO_USER(err, 0, param, &p.cap, sizeof(p.cap));
+		if (err)
+			goto bail;
+		break;
 	default:
 		err = -ENOTTY;
 		pr_info("bad ioctl: %d\n", ioctl_num);
@@ -4186,10 +4200,13 @@ static int fastrpc_probe(struct platform_device *pdev)
 			VERIFY(err, !of_property_read_u32(dev->of_node,
 					  "qcom,secure-domains",
 			      &secure_domains));
-			if (!err)
+			if (!err) {
+				me->secure_flag = true;
 				configure_secure_channels(secure_domains);
-			else
+			} else {
+				me->secure_flag = false;
 				pr_info("adsprpc: unable to read the domain configuration from dts\n");
+			}
 		}
 	}
 	if (of_device_is_compatible(dev->of_node,
