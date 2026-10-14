@@ -16,6 +16,7 @@
 #include <linux/backlight.h>
 #include <linux/debugfs.h>
 #include <linux/of_gpio.h>
+#include <linux/of_platform.h>
 #include <linux/sysfs.h>
 #include <linux/list.h>
 #include <linux/list_sort.h>
@@ -694,15 +695,32 @@ static int dsi_backlight_register(struct dsi_backlight_config *bl)
 	};
 	struct dsi_panel *panel = container_of(bl, struct dsi_panel, bl_config);
 	struct regulator *reg;
+	struct device_node *sde_np;
+	struct platform_device *sde_pdev = NULL;
+	struct device *bl_parent = panel->parent;
 
 	props.max_brightness = bl->brightness_max_level;
 	props.brightness = bl->brightness_max_level / 2;
 
+	// Dirty temp fix for SELinux backlight 
+	// Stock kernel registers backlight as "ae00000.qcom,mdss_mdp/backlight"
+	// Google's kernel registers as "soc:qcom,dsi-display@22/backlight"
+	// Motorola SELinux rules uses stock kernel path.
+	sde_np = of_find_compatible_node(NULL, NULL, "qcom,sde-kms");
+	if (sde_np) {
+		sde_pdev = of_find_device_by_node(sde_np);
+		of_node_put(sde_np);
+		if (sde_pdev)
+			bl_parent = &sde_pdev->dev;
+	}
+
 	snprintf(bl_node_name, BL_NODE_NAME_SIZE, "panel%u-backlight",
 		 display_count);
 	bl->bl_device = devm_backlight_device_register(panel->parent,
-				bl_node_name, panel->parent, bl,
+				bl_node_name, bl_parent, bl,
 				&dsi_backlight_ops, &props);
+	if (sde_pdev)
+		put_device(&sde_pdev->dev);
 	if (IS_ERR_OR_NULL(bl->bl_device)) {
 		bl->bl_device = NULL;
 		return -ENODEV;
