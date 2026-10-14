@@ -851,24 +851,33 @@ static int wlan_hdd_schedule_scan_request(
 	else
 		hdd_scan_req->scan_req_flags = 0;
 
-	qdf_spin_lock(&hdd_ctx->hdd_scan_req_q_lock);
-	status = sme_scan_request(WLAN_HDD_GET_HAL_CTX(adapter),
-				  adapter->sessionId, &csr_scan_req,
-				  callback, dev);
-	if (QDF_STATUS_SUCCESS == status)
-		qdf_list_insert_back(&hdd_ctx->hdd_scan_req_q,
-				     &hdd_scan_req->node);
-	qdf_spin_unlock(&hdd_ctx->hdd_scan_req_q_lock);
-
-	if (QDF_STATUS_SUCCESS != status) {
-		hdd_err("scan req failed with error %d", status);
-		qdf_mem_free(hdd_scan_req);
-		return -EINVAL;
-	}
-
 	qdf_timer_init(NULL, &hdd_scan_req->hdd_scan_inactivity_timer,
 		hdd_scan_inactivity_timer_handler, hdd_scan_req,
 		QDF_TIMER_TYPE_SW);
+
+	qdf_spin_lock(&hdd_ctx->hdd_scan_req_q_lock);
+	qdf_list_insert_back(&hdd_ctx->hdd_scan_req_q, &hdd_scan_req->node);
+	qdf_spin_unlock(&hdd_ctx->hdd_scan_req_q_lock);
+
+	status = sme_scan_request(WLAN_HDD_GET_HAL_CTX(adapter),
+				  adapter->sessionId, &csr_scan_req,
+				  callback, dev);
+
+	if (QDF_STATUS_SUCCESS != status) {
+		qdf_spin_lock(&hdd_ctx->hdd_scan_req_q_lock);
+		if (QDF_STATUS_SUCCESS == qdf_list_remove_node(
+				&hdd_ctx->hdd_scan_req_q,
+				&hdd_scan_req->node)) {
+			qdf_spin_unlock(&hdd_ctx->hdd_scan_req_q_lock);
+			qdf_timer_free(&hdd_scan_req->hdd_scan_inactivity_timer);
+			qdf_mem_free(hdd_scan_req);
+		} else {
+			qdf_spin_unlock(&hdd_ctx->hdd_scan_req_q_lock);
+		}
+		hdd_err("scan req failed with error %d", status);
+		return -EINVAL;
+	}
+
 	qdf_timer_start(&hdd_scan_req->hdd_scan_inactivity_timer,
 		HDD_SCAN_INACTIVITY_TIMEOUT);
 
