@@ -873,6 +873,13 @@ config SYSTRACE
 
 	  If in doubt, say N.
 
+config MOT_UTAG
+	tristate  "Motorola UTAGS Configuration read/write support"
+	default n
+	help
+	  read/write access to utag partition on motorola devices.
+
+source "drivers/misc/mot/Kconfig"
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
 source "drivers/misc/cb710/Kconfig"
