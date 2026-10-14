@@ -28,4 +28,10 @@ config MOT_MMI_SYS_TEMP
 	help
 	  Motorola virtual temperature sensors (back and front)
 
+config MOT_QPNP_SMBCHARGER
+	bool "Motorola QPNP SMB charger (MMI)"
+	depends on QPNP_SMB2
+	help
+	  A layer on top of the Qualcomm QPNP_SMB2 driver. It manages charging according to Motorola's specifications rather than Qualcomm's.
+
 endmenu
