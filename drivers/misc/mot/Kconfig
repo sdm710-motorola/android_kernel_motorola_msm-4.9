@@ -34,4 +34,14 @@ config MOT_QPNP_SMBCHARGER
 	help
 	  A layer on top of the Qualcomm QPNP_SMB2 driver. It manages charging according to Motorola's specifications rather than Qualcomm's.
 
+config MOT_FPC1020
+	tristate "Motorola FPC1020 fingerprint sensor driver"
+	help
+	  Motorola FPC1020 fingerprint sensor driver.
+
+config INPUT_MISC_FPC1020_SAVE_TO_CLASS_DEVICE
+	bool "FPC1020: expose attributes in a class device"
+	depends on MOT_FPC1020
+	default y
+
 endmenu
