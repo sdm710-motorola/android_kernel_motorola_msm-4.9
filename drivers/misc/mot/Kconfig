@@ -1,0 +1,8 @@
+menu "Drivers Motorola"
+
+config MOT_SENSORS_CLASS
+	bool "Motorola sensors class (/sys/class/sensors)"
+	help
+	  Base class used by Motorola sensor drivers (ABOV SAR).
+
+endmenu
