@@ -17,4 +17,10 @@ config MOT_MMI_ANNOTATE
 	help
 	  Motorola debug driver. Stores text in a memory area that the bootloader keeps constant. It serves only as a dependency.
 
+config MOT_MMI_INFO
+	bool "Motorola MMI hardware info"
+	select MOT_MMI_ANNOTATE
+	help
+	  Motorola information driver. It stores device information for userspace and writes certain data to an area accessible by the modem. Important.
+
 endmenu
