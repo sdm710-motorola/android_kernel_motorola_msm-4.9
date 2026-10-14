@@ -1319,4 +1319,10 @@ config TOUCHSCREEN_HIMAX_CHIPSET
 
 source "drivers/input/touchscreen/hxchipset/Kconfig"
 
+config TOUCHSCREEN_NOVA_0FLASH_MMI
+	bool "Novatek NT36xxx SPI touchscreen"
+	depends on SPI_MASTER
+	help
+	  Novatek NT36525 SPI Touchscreen Driver 
+
 endif
