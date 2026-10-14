@@ -17,6 +17,7 @@
 #include <linux/slab.h>
 #include <linux/etherdevice.h>
 #include <linux/debugfs.h>
+#include <linux/ctype.h>
 #include <net/cnss_utils.h>
 
 #define CNSS_MAX_CH_NUM 45
@@ -452,6 +453,79 @@ out:
 	return ret;
 }
 
+// Get macaddr from ABL(via kernel cmdline)
+static const char *cnss_utils_find_cmdline_macs(void)
+{
+	static const char key[] = "wifimacaddr=";
+	const char *p = saved_command_line;
+
+	// Only accept first parameter
+	while ((p = strstr(p, key))) {
+		if (p == saved_command_line || p[-1] == ' ')
+			return p + strlen(key);
+		p += strlen(key);
+	}
+	return NULL;
+}
+
+// Convert mac from char to u8, then returns the pointer after the mac addr in *s
+static const char *cnss_utils_parse_mac(const char *s, u8 *mac)
+{
+	int i;
+
+	for (i = 0; i < ETH_ALEN; i++) {
+		if (!isxdigit(s[0]) || !isxdigit(s[1]))
+			return NULL;
+		mac[i] = (hex_to_bin(s[0]) << 4) | hex_to_bin(s[1]);
+		s += 2;
+		if (i < ETH_ALEN - 1 && *s++ != ':')
+			return NULL;
+	}
+	return s;
+}
+
+
+static void cnss_utils_mac_from_cmdline(void)
+{
+	u8 macs[MAX_NO_OF_MAC_ADDR * ETH_ALEN];
+	const char *s = cnss_utils_find_cmdline_macs();
+	int cur_mac = 0;
+	int ret;
+
+	if (!s)
+		return;
+
+	while (cur_mac < MAX_NO_OF_MAC_ADDR) {
+		u8 *m = &macs[cur_mac * ETH_ALEN];
+
+		s = cnss_utils_parse_mac(s, m);
+		if (!s)
+			break;
+
+		if (!is_valid_ether_addr(m)) {
+			pr_warn("cnss_utils: MAC %d from cmdline is invalid (%pM)\n",
+				cur_mac, m);
+			break;
+		}
+		cur_mac++;
+
+		if (*s++ != ',')
+			break;
+	}
+
+	if (!cur_mac) {
+		pr_warn("cnss_utils: wifimacaddr= is empty or don't have a valid mac addr\n");
+		return;
+	}
+
+	ret = set_wlan_mac_address(macs, cur_mac * ETH_ALEN, CNSS_MAC_PROVISIONED);
+	if (ret)
+		pr_err("cnss_utils: fail to register mac addr: %d\n",
+		       ret);
+	else
+		pr_info("cnss_utils: %d mac(s) on cmdline\n", cur_mac);
+}
+
 static int __init cnss_utils_init(void)
 {
 	struct cnss_utils_priv *priv = NULL;
@@ -466,6 +540,7 @@ static int __init cnss_utils_init(void)
 	spin_lock_init(&priv->dfs_nol_info_lock);
 	cnss_utils_debugfs_create(priv);
 	cnss_utils_priv = priv;
+	cnss_utils_mac_from_cmdline();
 
 	return 0;
 }
