@@ -41,6 +41,7 @@
 
 #include "msm-pcm-routing-v2.h"
 #include "msm-pcm-routing-devdep.h"
+#include <linux/msm_audio.h>
 #include "msm-qti-pp-config.h"
 #include "msm-dolby-dap-config.h"
 #include "msm-ds2-dap-config.h"

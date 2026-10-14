@@ -120,3 +120,7 @@ config WCD_MICBIAS_USE_PULLUP
 	tristate "WCD_MICBIAS_USE_PULLUP"
 config WCD_SPI_AC
 	tristate "WCD_SPI_AC"
+config AW882XX_CODEC
+	tristate "AW882XX_CODEC"
+config AW882XX_DSP
+	tristate "AW882XX_DSP"

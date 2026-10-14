@@ -1,0 +1,1 @@
+obj-$(CONFIG_AW882XX_CODEC) += aw882xx.o
