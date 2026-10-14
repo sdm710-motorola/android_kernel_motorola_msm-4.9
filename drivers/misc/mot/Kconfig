@@ -12,4 +12,9 @@ config MOT_ABOV_SAR
 	help
 	  ABOV SAR Driver
 
+config MOT_MMI_ANNOTATE
+	bool "Motorola MMI annotate"
+	help
+	  Motorola debug driver. Stores text in a memory area that the bootloader keeps constant. It serves only as a dependency.
+
 endmenu
