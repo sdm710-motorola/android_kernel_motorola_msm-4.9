@@ -6666,6 +6666,7 @@ int ipa3_get_smmu_params(struct ipa_smmu_in_params *in,
  *            PCIe Version
  *************************************************************/
 
+#ifdef CONFIG_PCI
 int ipa3_pci_drv_probe(
 	struct pci_dev            *pci_dev,
 	struct ipa_api_controller *api_ctrl,
@@ -6825,6 +6826,15 @@ int ipa3_pci_drv_probe(
 
 	return result;
 }
+#else
+int ipa3_pci_drv_probe(
+	struct pci_dev            *pci_dev,
+	struct ipa_api_controller *api_ctrl,
+	const struct of_device_id *pdrv_match)
+{
+	return -ENODEV;
+}
+#endif /* CONFIG_PCI */
 
 /*
  * The following returns transport register memory location and
