@@ -31,3 +31,7 @@
 	/delete-node/ spkr_2_sd_n;
 	/delete-node/ aqt_intr;
 };
+
+// Memory not used by astro
+/delete-node/ &mem_dump;
+/delete-node/ &dump_mem;
