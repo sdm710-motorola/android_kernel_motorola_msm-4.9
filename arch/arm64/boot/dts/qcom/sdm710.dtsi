@@ -24,3 +24,11 @@
 	/delete-property/qcom,soc-hw-rev-efuse;
 	/delete-node/qcom,soc-hw-revisions;
 };
+
+&CPU6 {
+	clock-frequency = <2208000000>;
+};
+
+&CPU7 {
+	clock-frequency = <2208000000>;
+};
