@@ -2259,7 +2259,7 @@ static void msm_geni_serial_debug_init(struct uart_port *uport, bool console)
 					dev_name(uport->dev), "_rx");
 			msm_port->ipc_log_rx = ipc_log_context_create(
 					IPC_LOG_TX_RX_PAGES, name, 0);
-			if (!msm_port->ipc_log_rx)
+			if (IS_ENABLED(CONFIG_IPC_LOGGING) && !msm_port->ipc_log_rx)
 				dev_info(uport->dev, "Err in Rx IPC Log\n");
 		}
 		memset(name, 0, sizeof(name));
@@ -2268,7 +2268,7 @@ static void msm_geni_serial_debug_init(struct uart_port *uport, bool console)
 					dev_name(uport->dev), "_tx");
 			msm_port->ipc_log_tx = ipc_log_context_create(
 					IPC_LOG_TX_RX_PAGES, name, 0);
-			if (!msm_port->ipc_log_tx)
+			if (IS_ENABLED(CONFIG_IPC_LOGGING) && !msm_port->ipc_log_tx)
 				dev_info(uport->dev, "Err in Tx IPC Log\n");
 		}
 		memset(name, 0, sizeof(name));
@@ -2277,7 +2277,7 @@ static void msm_geni_serial_debug_init(struct uart_port *uport, bool console)
 					dev_name(uport->dev), "_pwr");
 			msm_port->ipc_log_pwr = ipc_log_context_create(
 					IPC_LOG_PWR_PAGES, name, 0);
-			if (!msm_port->ipc_log_pwr)
+			if (IS_ENABLED(CONFIG_IPC_LOGGING) && !msm_port->ipc_log_pwr)
 				dev_info(uport->dev, "Err in Pwr IPC Log\n");
 		}
 		memset(name, 0, sizeof(name));
@@ -2286,7 +2286,7 @@ static void msm_geni_serial_debug_init(struct uart_port *uport, bool console)
 					dev_name(uport->dev), "_misc");
 			msm_port->ipc_log_misc = ipc_log_context_create(
 					IPC_LOG_MISC_PAGES, name, 0);
-			if (!msm_port->ipc_log_misc)
+			if (IS_ENABLED(CONFIG_IPC_LOGGING) && !msm_port->ipc_log_misc)
 				dev_info(uport->dev, "Err in Misc IPC Log\n");
 		}
 	}

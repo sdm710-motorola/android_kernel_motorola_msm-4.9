@@ -485,7 +485,7 @@ int cnss_debug_init(void)
 {
 	cnss_ipc_log_context = ipc_log_context_create(CNSS_IPC_LOG_PAGES,
 						      "cnss", 0);
-	if (!cnss_ipc_log_context) {
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !cnss_ipc_log_context) {
 		cnss_pr_err("Unable to create IPC log context!\n");
 		return -EINVAL;
 	}

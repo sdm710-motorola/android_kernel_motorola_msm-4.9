@@ -3938,7 +3938,7 @@ static int ipa_init(const struct ipa_plat_drv_res *resource_p,
 	}
 
 	ipa_ctx->logbuf = ipc_log_context_create(IPA_IPC_LOG_PAGES, "ipa", 0);
-	if (ipa_ctx->logbuf == NULL)
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && ipa_ctx->logbuf == NULL)
 		IPADBG("failed to create IPC log, continue...\n");
 
 	ipa_ctx->pdev = ipa_dev;

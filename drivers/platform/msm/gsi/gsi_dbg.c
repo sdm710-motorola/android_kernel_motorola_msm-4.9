@@ -648,7 +648,7 @@ static ssize_t gsi_enable_ipc_low(struct file *file,
 			gsi_ipc_logbuf_low =
 				ipc_log_context_create(GSI_IPC_LOG_PAGES,
 					"gsi_low", 0);
-			if (gsi_ipc_logbuf_low == NULL)
+			if (IS_ENABLED(CONFIG_IPC_LOGGING) && !gsi_ipc_logbuf_low)
 				TERR("failed to get ipc_logbuf_low\n");
 		}
 		gsi_ctx->ipc_logbuf_low = gsi_ipc_logbuf_low;

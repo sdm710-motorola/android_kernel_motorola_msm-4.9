@@ -3591,7 +3591,7 @@ static int fgsi_init(void)
 	}
 
 	ipc_log_ctxt = ipc_log_context_create(NUM_LOG_PAGES, "usb_gsi", 0);
-	if (!ipc_log_ctxt)
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !ipc_log_ctxt)
 		pr_err("%s: Err allocating ipc_log_ctxt\n", __func__);
 
 	usb_gsi_debugfs_init();

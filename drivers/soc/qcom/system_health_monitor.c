@@ -903,7 +903,7 @@ static int __init system_health_monitor_init(void)
 	int rc;
 
 	shm_ilctxt = ipc_log_context_create(SHM_ILCTXT_NUM_PAGES, "shm", 0);
-	if (!shm_ilctxt) {
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !shm_ilctxt) {
 		SHM_ERR("%s: Unable to create SHM logging context\n", __func__);
 		shm_debug_mask = 0;
 	}

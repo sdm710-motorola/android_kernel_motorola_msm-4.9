@@ -838,7 +838,7 @@ static void smd_tty_log_init(void)
 {
 	smd_tty_log_ctx = ipc_log_context_create(SMD_TTY_LOG_PAGES,
 						"smd_tty", 0);
-	if (!smd_tty_log_ctx)
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !smd_tty_log_ctx)
 		pr_err("%s: Unable to create IPC log", __func__);
 }
 

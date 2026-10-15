@@ -3649,7 +3649,7 @@ static int __init wcnss_wlan_init(void)
 {
 
 	wcnss_ipc_log = ipc_log_context_create(IPC_NUM_LOG_PAGES, "wcnss", 0);
-	if (!wcnss_ipc_log)
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !wcnss_ipc_log)
 		wcnss_log(ERR, "Unable to create log context\n");
 
 	platform_driver_register(&wcnss_wlan_driver);

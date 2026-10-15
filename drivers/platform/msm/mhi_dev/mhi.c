@@ -2981,7 +2981,7 @@ static int mhi_dev_probe(struct platform_device *pdev)
 		}
 		mhi_ipc_log = ipc_log_context_create(MHI_IPC_LOG_PAGES,
 								"mhi", 0);
-		if (mhi_ipc_log == NULL) {
+		if (IS_ENABLED(CONFIG_IPC_LOGGING) && !mhi_ipc_log) {
 			dev_err(&pdev->dev,
 				"Failed to create IPC logging context\n");
 		}

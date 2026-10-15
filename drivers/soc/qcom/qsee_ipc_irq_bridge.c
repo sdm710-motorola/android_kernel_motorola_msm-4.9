@@ -123,7 +123,7 @@ static int qiib_driver_data_init(void)
 
 	qiib_info->log_ctx = ipc_log_context_create(NUM_LOG_PAGES,
 						"qsee_ipc_irq_bridge", 0);
-	if (!qiib_info->log_ctx)
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !qiib_info->log_ctx)
 		QIIB_ERR("%s: unable to create logging context\n", __func__);
 
 	return 0;

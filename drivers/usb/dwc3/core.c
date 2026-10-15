@@ -1363,7 +1363,7 @@ static int dwc3_probe(struct platform_device *pdev)
 
 	dwc->dwc_ipc_log_ctxt = ipc_log_context_create(NUM_LOG_PAGES,
 					dev_name(dwc->dev), 0);
-	if (!dwc->dwc_ipc_log_ctxt)
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !dwc->dwc_ipc_log_ctxt)
 		dev_err(dwc->dev, "Error getting ipc_log_ctxt\n");
 
 	dwc3_instance[count] = dwc;

@@ -1781,7 +1781,7 @@ static int ngd_slim_probe(struct platform_device *pdev)
 	/* Create IPC log context */
 	dev->ipc_slimbus_log = ipc_log_context_create(IPC_SLIMBUS_LOG_PAGES,
 						dev_name(dev->dev), 0);
-	if (!dev->ipc_slimbus_log)
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !dev->ipc_slimbus_log)
 		dev_err(&pdev->dev, "error creating ipc_logging context\n");
 	else {
 		/* Initialize the log mask */

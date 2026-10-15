@@ -2654,10 +2654,10 @@ static int __init ep_pcie_init(void)
 	snprintf(logname, MAX_NAME_LEN, "ep-pcie-long");
 	ep_pcie_dev.ipc_log_sel =
 		ipc_log_context_create(EP_PCIE_LOG_PAGES, logname, 0);
-	if (ep_pcie_dev.ipc_log_sel == NULL)
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !ep_pcie_dev.ipc_log_sel)
 		pr_err("%s: unable to create IPC selected log for %s\n",
 			__func__, logname);
-	else
+	else if (IS_ENABLED(CONFIG_IPC_LOGGING))
 		EP_PCIE_DBG(&ep_pcie_dev,
 			"PCIe V%d: IPC selected logging is enable for %s\n",
 			ep_pcie_dev.rev, logname);
@@ -2665,10 +2665,10 @@ static int __init ep_pcie_init(void)
 	snprintf(logname, MAX_NAME_LEN, "ep-pcie-short");
 	ep_pcie_dev.ipc_log_ful =
 		ipc_log_context_create(EP_PCIE_LOG_PAGES * 2, logname, 0);
-	if (ep_pcie_dev.ipc_log_ful == NULL)
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !ep_pcie_dev.ipc_log_ful)
 		pr_err("%s: unable to create IPC detailed log for %s\n",
 			__func__, logname);
-	else
+	else if (IS_ENABLED(CONFIG_IPC_LOGGING))
 		EP_PCIE_DBG(&ep_pcie_dev,
 			"PCIe V%d: IPC detailed logging is enable for %s\n",
 			ep_pcie_dev.rev, logname);
@@ -2676,10 +2676,10 @@ static int __init ep_pcie_init(void)
 	snprintf(logname, MAX_NAME_LEN, "ep-pcie-dump");
 	ep_pcie_dev.ipc_log_dump =
 		ipc_log_context_create(EP_PCIE_LOG_PAGES, logname, 0);
-	if (ep_pcie_dev.ipc_log_dump == NULL)
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !ep_pcie_dev.ipc_log_dump)
 		pr_err("%s: unable to create IPC dump log for %s\n",
 			__func__, logname);
-	else
+	else if (IS_ENABLED(CONFIG_IPC_LOGGING))
 		EP_PCIE_DBG(&ep_pcie_dev,
 			"PCIe V%d: IPC dump logging is enable for %s\n",
 			ep_pcie_dev.rev, logname);

@@ -4374,9 +4374,9 @@ static int smb_mmi_probe(struct platform_device *pdev)
 
 	chip->debug_enabled = &debug_enabled;
 	chip->ipc_log = ipc_log_context_create(MMI_LOG_PAGES, "charger", 0);
-	if (!chip->ipc_log)
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !chip->ipc_log)
 		mmi_err(chip, "Failed to create SMBMMI IPC log\n");
-	else
+	else if (IS_ENABLED(CONFIG_IPC_LOGGING))
 		mmi_info(chip, "IPC logging is enabled for SMBMMI\n");
 
 	chip->regmap = dev_get_regmap(chip->dev->parent, NULL);

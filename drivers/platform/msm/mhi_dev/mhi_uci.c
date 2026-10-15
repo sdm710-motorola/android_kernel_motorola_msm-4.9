@@ -930,7 +930,7 @@ int mhi_uci_init(void)
 
 	mhi_uci_ipc_log = ipc_log_context_create(MHI_UCI_IPC_LOG_PAGES,
 						"mhi-uci", 0);
-	if (mhi_uci_ipc_log == NULL) {
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !mhi_uci_ipc_log) {
 		uci_log(UCI_DBG_WARNING,
 				"Failed to create IPC logging context\n");
 	}

@@ -3459,7 +3459,7 @@ static int msm_hs_probe(struct platform_device *pdev)
 	msm_uport->ipc_msm_hs_log_ctxt =
 			ipc_log_context_create(IPC_MSM_HS_LOG_STATE_PAGES,
 								name, 0);
-	if (!msm_uport->ipc_msm_hs_log_ctxt) {
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !msm_uport->ipc_msm_hs_log_ctxt) {
 		dev_err(&pdev->dev, "%s: error creating logging context",
 								__func__);
 	} else {
@@ -3548,7 +3548,7 @@ static int msm_hs_probe(struct platform_device *pdev)
 									"_tx");
 	msm_uport->tx.ipc_tx_ctxt =
 		ipc_log_context_create(IPC_MSM_HS_LOG_DATA_PAGES, name, 0);
-	if (!msm_uport->tx.ipc_tx_ctxt)
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !msm_uport->tx.ipc_tx_ctxt)
 		dev_err(&pdev->dev, "%s: error creating tx logging context",
 								__func__);
 
@@ -3557,7 +3557,7 @@ static int msm_hs_probe(struct platform_device *pdev)
 									"_rx");
 	msm_uport->rx.ipc_rx_ctxt = ipc_log_context_create(
 					IPC_MSM_HS_LOG_DATA_PAGES, name, 0);
-	if (!msm_uport->rx.ipc_rx_ctxt)
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !msm_uport->rx.ipc_rx_ctxt)
 		dev_err(&pdev->dev, "%s: error creating rx logging context",
 								__func__);
 
@@ -3566,7 +3566,7 @@ static int msm_hs_probe(struct platform_device *pdev)
 									"_pwr");
 	msm_uport->ipc_msm_hs_pwr_ctxt = ipc_log_context_create(
 					IPC_MSM_HS_LOG_USER_PAGES, name, 0);
-	if (!msm_uport->ipc_msm_hs_pwr_ctxt)
+	if (IS_ENABLED(CONFIG_IPC_LOGGING) && !msm_uport->ipc_msm_hs_pwr_ctxt)
 		dev_err(&pdev->dev, "%s: error creating usr logging context",
 								__func__);
 
