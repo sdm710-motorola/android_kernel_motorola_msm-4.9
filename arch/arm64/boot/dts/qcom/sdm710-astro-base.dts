@@ -32,6 +32,16 @@
 	/delete-node/ aqt_intr;
 };
 
+/* Unused by motorola bootloader */
+&soc {
+	qcom,msm-imem@146bf000 {
+		restart_info@a94 {
+			compatible = "msm-imem-restart_info";
+			reg = <0xa94 100>;
+		};
+	};
+};
+
 // Memory not used by astro
 /delete-node/ &mem_dump;
 /delete-node/ &dump_mem;
