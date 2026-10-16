@@ -119,7 +119,7 @@ struct pmic_revid_data *get_revid_data(struct device_node *dev_node)
 		}
 	}
 	mutex_unlock(&revid_chips_lock);
-	return ERR_PTR(-EINVAL);
+	return ERR_PTR(-EPROBE_DEFER);
 }
 EXPORT_SYMBOL(get_revid_data);
 
