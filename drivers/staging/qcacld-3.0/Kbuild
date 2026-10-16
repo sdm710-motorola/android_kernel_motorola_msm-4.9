@@ -245,9 +245,9 @@ endif
 # way no critical debug feature will be enabled for perf and shipment
 # builds. Other OEMs are also protected using the TARGET_BUILD_VARIANT
 # config.
-ifneq ($(TARGET_BUILD_VARIANT),user)
-	CONFIG_FEATURE_PKTLOG := y
-endif
+#ifneq ($(TARGET_BUILD_VARIANT),user)
+#	CONFIG_FEATURE_PKTLOG := y
+#endif
 
 #enable spectral scan feature
 CONFIG_WLAN_SPECTRAL_SCAN := y
