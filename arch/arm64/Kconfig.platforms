@@ -333,4 +333,9 @@ config BOARD_BONITO
 	depends on ARCH_QCOM
 	select ARCH_SDM670
 
+config BOARD_ASTRO
+	bool "Motorola One Fusion (astro) Family"
+	depends on ARCH_QCOM
+	select ARCH_SDM670
+
 endmenu

@@ -1,6 +1,7 @@
 # Do not include QC default DTBs for B1C1 and BONITO builds.
 ifneq ($(CONFIG_BOARD_B1C1),y)
 ifneq ($(CONFIG_BOARD_BONITO),y)
+ifneq ($(CONFIG_BOARD_ASTRO), y)
 
 dtb-$(CONFIG_ARCH_QCOM)	+= apq8016-sbc.dtb msm8916-mtp.dtb
 dtb-$(CONFIG_ARCH_QCOM)	+= msm8996-mtp.dtb
@@ -227,7 +228,6 @@ sdm710-tasha-codec-cdp-overlay.dtbo-base := sdm710.dtb
 sdm710-pm660a-tasha-codec-cdp-overlay.dtbo-base := sdm710.dtb
 sdm710-aqt1000-cdp-overlay.dtbo-base := sdm710.dtb
 sdm710-pm660a-aqt1000-cdp-overlay.dtbo-base := sdm710.dtb
-
 else
 dtb-$(CONFIG_ARCH_SDM670) += sdm670-rumi.dtb \
 	sdm670-mtp.dtb \
@@ -499,8 +499,23 @@ dtb-$(CONFIG_ARCH_SDM429) += sdm429-mtp.dtb \
 
 endif
 
+endif #CONFIG_BOARD_ASTRO
 endif #CONFIG_BOARD_BONITO
 endif #CONFIG_BOARD_B1C1
+
+# Build astro only unified dtb
+ifeq ($(CONFIG_BOARD_ASTRO),y)
+
+quiet_cmd_dtmerge = DTMERGE $@
+cmd_dtmerge = fdtoverlay -i $(filter %.dtb,$^) -o $@ $(filter %.dtbo,$^)
+
+dtb-y += sdm710-motorola-astro.dtb
+targets += sdm710-astro-base.dtb sdm710-astro-dvt1a-overlay.dtbo
+
+$(obj)/sdm710-motorola-astro.dtb: $(obj)/sdm710-astro-base.dtb $(obj)/sdm710-astro-dvt1a-overlay.dtbo FORCE
+	$(call if_changed,dtmerge)
+
+endif #CONFIG_BOARD_ASTRO
 
 always		:= $(dtb-y)
 subdir-y	:= $(dts-dirs)
