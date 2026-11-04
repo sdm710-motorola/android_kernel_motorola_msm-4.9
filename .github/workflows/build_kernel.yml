@@ -1,0 +1,39 @@
+name: Build Kernel Boot Image
+
+on:
+  push:
+    branches: ['**']
+
+jobs:
+  backend:
+    name: Build Kernel Boot image
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout build helper 
+        uses: actions/checkout@v6
+        with:
+          repository: sdm710-motorola/build_helper
+      
+      - name: Checkout Kernel
+        uses: actions/checkout@v6
+        with:
+          path: projects/motorola_msm-4.9
+
+      - name: Build Kernel
+        run: ./helper.sh kernel_4.9 build astro_defconfig
+      
+      - name: Build boot.image
+        run: ./helper.sh kernel_4.9 mkbootimg sdm710-motorola-astro.dtb
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: boot-${{ github.sha }}
+          path: |
+            tmp/out/boot.img
+          if-no-files-found: error
